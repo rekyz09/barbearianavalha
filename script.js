@@ -226,6 +226,40 @@ function iniciarAgendamento(usuario) {
     listarAgendamentos();
   });
 
+  // Monta o texto de um agendamento para o .txt
+  function textoAgendamento(a) {
+    const dataBR = a.data.split('-').reverse().join('/');
+    return 'Serviço: ' + a.servico + '\n' +
+           'Profissional: ' + a.profissional + '\n' +
+           'Data: ' + dataBR + '\n' +
+           'Horário: ' + a.horario + '\n';
+  }
+
+  function baixarTxt(nomeArquivo, conteudo) {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([conteudo], { type: 'text/plain;charset=utf-8' }));
+    link.download = nomeArquivo;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  const cabecalho = 'Barbearia Navalha\nCliente: ' + usuario.nome + '\n\n';
+
+  function imprimirUm(a) {
+    const nome = 'agendamento_' + a.data + '_' + a.horario.replace(':', 'h') + '.txt';
+    baixarTxt(nome, cabecalho + textoAgendamento(a));
+  }
+
+  document.getElementById('btn-imprimir-todos').addEventListener('click', function () {
+    const meus = pegarAgendamentos().filter(a => a.email === usuario.email);
+    if (meus.length === 0) {
+      mostrarMensagem('Você ainda não tem agendamentos para imprimir.');
+      return;
+    }
+    const corpo = meus.map((a, i) => 'Agendamento ' + (i + 1) + '\n' + textoAgendamento(a)).join('\n');
+    baixarTxt('meus_agendamentos.txt', cabecalho + corpo);
+  });
+
   function listarAgendamentos() {
     const lista = document.getElementById('lista-agendamentos');
     const meus = pegarAgendamentos().filter(a => a.email === usuario.email);
@@ -250,7 +284,19 @@ function iniciarAgendamento(usuario) {
         atualizaHorarios();
         listarAgendamentos();
       });
-      li.appendChild(btn);
+      const btnImprimir = document.createElement('button');
+      btnImprimir.type = 'button';
+      btnImprimir.className = 'botao-icone';
+      btnImprimir.title = 'Imprimir este agendamento';
+      btnImprimir.setAttribute('aria-label', 'Imprimir este agendamento');
+      btnImprimir.innerHTML = '<svg class="icone-impressora" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      btnImprimir.addEventListener('click', function () { imprimirUm(a); });
+
+      const acoes = document.createElement('div');
+      acoes.className = 'acoes';
+      acoes.appendChild(btnImprimir);
+      acoes.appendChild(btn);
+      li.appendChild(acoes);
       lista.appendChild(li);
     });
   }
