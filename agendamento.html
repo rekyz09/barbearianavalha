@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <title>Barbearia Navalha | Agendamento</title>
+</head>
+<body class="fundo-logado">
+  <header>
+    <nav>
+      <a class="logo" href="index.html">Barbearia Navalha</a>
+      <ul class="menu">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li class="tem-submenu">
+          <a href="#" id="btn-sobre">Sobre</a>
+          <ul class="menu-vertical" id="menu-vertical-sobre">
+            <li class="tem-aba">
+              <a href="#" class="item-aba" aria-expanded="false">Empresa</a>
+              <div class="aba-lateral">
+                <h3>Empresa</h3>
+                <p>A Barbearia Navalha faz corte, barba e pintura com hora marcada, direto pelo site.</p>
+                <p>Atendimento das 9h às 19h, com pausa para o almoço às 12h.</p>
+              </div>
+            </li>
+            <li class="tem-aba">
+              <a href="#" class="item-aba" aria-expanded="false">Clientes</a>
+              <div class="aba-lateral">
+                <h3>Clientes</h3>
+                <p>Quem tem conta agenda online, escolhe o profissional e acompanha os próprios horários.</p>
+                <p>Para tirar dúvidas sobre um agendamento, fale com a gente pelo telefone.</p>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="tem-submenu">
+          <a href="#" id="btn-contato">Contato</a>
+          <ul class="menu-vertical" id="menu-vertical-contato">
+            <li class="tem-aba">
+              <a href="#" class="item-aba" aria-expanded="false">Telefones</a>
+              <div class="aba-lateral aba-esq">
+                <h3>Telefones</h3>
+                <p><a href="tel:+5532999999999">(32) 99999-9999</a></p>
+                <p>Ligue para marcar, remarcar ou cancelar.</p>
+              </div>
+            </li>
+            <li><a href="mailto:contato@barbearianavalha.com">Email</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Olá, <span id="nome-usuario"></span></h1>
+    <p>Escolha o serviço, o profissional e um horário disponível.</p>
+    <div class="painel">
+    <form id="form-agendamento" class="caixa">
+      <label for="servico">Serviço</label>
+      <select id="servico" required>
+        <option value="">Selecione</option>
+        <option>Corte - R$ 40</option>
+        <option>Barba - R$ 30</option>
+        <option>Corte + Barba - R$ 60</option>
+        <option>Pintura - R$ 80</option>
+      </select>
+      <label for="profissional">Profissional</label>
+      <select id="profissional" required>
+        <option value="">Selecione</option>
+        <option>Carlos</option>
+        <option>Marcos</option>
+        <option>Juliana</option>
+      </select>
+      <label for="data">Dia</label>
+      <input type="date" id="data" required>
+      <label for="horario">Horário</label>
+      <select id="horario" required>
+        <option value="">Escolha profissional e dia</option>
+      </select>
+      <p id="mensagem" class="mensagem" role="alert"></p>
+      <button type="submit" class="botao">Confirmar agendamento</button>
+    </form>
+
+    <section class="caixa">
+      <h2>Meus agendamentos</h2>
+      <ul id="lista-agendamentos"></ul>
+    </section>
+    </div>
+    <button type="button" class="botao" id="btn-sair">Sair</button>
+  </main>
+  <footer>
+    <p>Data Atual: <span id="data-atual"></span></p>
+    <p>&copy; Todos os direitos reservados. Jacinto</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
