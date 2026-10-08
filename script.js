@@ -139,14 +139,26 @@ if (formCadastro) {
     link.download = 'cadastro_' + email.split('@')[0] + '.txt';
     link.click();
 
+    // guarda email e senha só até a tela de login preencher os campos
+    sessionStorage.setItem('ultimoCadastro', JSON.stringify({ email, senha }));
+
     mostrarMensagem('Cadastro feito! Indo para o login...', true);
-    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+    setTimeout(() => { window.location.href = 'login.html'; }, 1000);
   });
 }
 
 /* ===== LOGIN ===== */
 const formLogin = document.getElementById('form-login');
 if (formLogin) {
+  // Veio do cadastro? Preenche os campos para entrar com um clique
+  const recemCadastrado = JSON.parse(sessionStorage.getItem('ultimoCadastro'));
+  if (recemCadastrado) {
+    document.getElementById('email').value = recemCadastrado.email;
+    document.getElementById('senha').value = recemCadastrado.senha;
+    sessionStorage.removeItem('ultimoCadastro');
+    mostrarMensagem('Cadastro feito! É só clicar em Entrar.', true);
+    formLogin.querySelector('button[type="submit"]').focus();
+  }
   formLogin.addEventListener('submit', function (event) {
     event.preventDefault();
     const email = document.getElementById('email').value.trim().toLowerCase();
@@ -239,8 +251,13 @@ function iniciarAgendamento(usuario) {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([conteudo], { type: 'text/plain;charset=utf-8' }));
     link.download = nomeArquivo;
+    link.style.display = 'none';
+    document.body.appendChild(link); // alguns navegadores só baixam se o link estiver na página
     link.click();
-    URL.revokeObjectURL(link.href);
+    setTimeout(function () {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    }, 1000);
   }
 
   const cabecalho = 'Barbearia Navalha\nCliente: ' + usuario.nome + '\n\n';
@@ -249,16 +266,6 @@ function iniciarAgendamento(usuario) {
     const nome = 'agendamento_' + a.data + '_' + a.horario.replace(':', 'h') + '.txt';
     baixarTxt(nome, cabecalho + textoAgendamento(a));
   }
-
-  document.getElementById('btn-imprimir-todos').addEventListener('click', function () {
-    const meus = pegarAgendamentos().filter(a => a.email === usuario.email);
-    if (meus.length === 0) {
-      mostrarMensagem('Você ainda não tem agendamentos para imprimir.');
-      return;
-    }
-    const corpo = meus.map((a, i) => 'Agendamento ' + (i + 1) + '\n' + textoAgendamento(a)).join('\n');
-    baixarTxt('meus_agendamentos.txt', cabecalho + corpo);
-  });
 
   function listarAgendamentos() {
     const lista = document.getElementById('lista-agendamentos');
@@ -286,10 +293,8 @@ function iniciarAgendamento(usuario) {
       });
       const btnImprimir = document.createElement('button');
       btnImprimir.type = 'button';
-      btnImprimir.className = 'botao-icone';
-      btnImprimir.title = 'Imprimir este agendamento';
-      btnImprimir.setAttribute('aria-label', 'Imprimir este agendamento');
-      btnImprimir.innerHTML = '<svg class="icone-impressora" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      btnImprimir.className = 'botao botao-imprimir';
+      btnImprimir.textContent = 'Imprimir';
       btnImprimir.addEventListener('click', function () { imprimirUm(a); });
 
       const acoes = document.createElement('div');
