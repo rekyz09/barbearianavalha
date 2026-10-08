@@ -140,7 +140,9 @@ if (formCadastro) {
     link.click();
 
     // guarda email e senha só até a tela de login preencher os campos
-    sessionStorage.setItem('ultimoCadastro', JSON.stringify({ email, senha }));
+    const dadosLogin = JSON.stringify({ email, senha });
+    sessionStorage.setItem('ultimoCadastro', dadosLogin);
+    localStorage.setItem('ultimoCadastro', dadosLogin); // reserva, caso o navegador não repasse o sessionStorage
 
     mostrarMensagem('Cadastro feito! Indo para o login...', true);
     setTimeout(() => { window.location.href = 'login.html'; }, 1000);
@@ -151,14 +153,27 @@ if (formCadastro) {
 const formLogin = document.getElementById('form-login');
 if (formLogin) {
   // Veio do cadastro? Preenche os campos para entrar com um clique
-  const recemCadastrado = JSON.parse(sessionStorage.getItem('ultimoCadastro'));
+  const recemCadastrado = JSON.parse(
+    sessionStorage.getItem('ultimoCadastro') || localStorage.getItem('ultimoCadastro') || 'null'
+  );
   if (recemCadastrado) {
-    document.getElementById('email').value = recemCadastrado.email;
-    document.getElementById('senha').value = recemCadastrado.senha;
     sessionStorage.removeItem('ultimoCadastro');
+    localStorage.removeItem('ultimoCadastro');
+    const campoEmail = document.getElementById('email');
+    const campoSenha = document.getElementById('senha');
+    const preencher = function () {
+      // refaz se o autopreenchimento do navegador apagar ou trocar os campos
+      if (campoEmail.value !== recemCadastrado.email) campoEmail.value = recemCadastrado.email;
+      if (campoSenha.value !== recemCadastrado.senha) campoSenha.value = recemCadastrado.senha;
+    };
+    preencher();
+    setTimeout(preencher, 150);
+    setTimeout(preencher, 600);
+    window.addEventListener('pageshow', preencher);
     mostrarMensagem('Cadastro feito! É só clicar em Entrar.', true);
     formLogin.querySelector('button[type="submit"]').focus();
   }
+
   formLogin.addEventListener('submit', function (event) {
     event.preventDefault();
     const email = document.getElementById('email').value.trim().toLowerCase();
